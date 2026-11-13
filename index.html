@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>아루의 숲속 오두막 🌲✨</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    /* CSS Variables for Light/Dark Mode */
+    :root {
+      --bg-color: #f4f9f4;
+      --card-bg: #ffffff;
+      --text-color: #2d4030;
+      --accent-color: #5b8c5a;
+      --accent-hover: #4a7549;
+      --sub-accent: #e8f5e9;
+      --border-color: #c8e6c9;
+      --shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      --card-back-bg: #e2edd5;
+      --card-back-text: #1b4332;
+      --tree-color: #81c784;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #1a2f23;
+      --card-bg: #263e2e;
+      --text-color: #e8f5e9;
+      --accent-color: #81c784;
+      --accent-hover: #a5d6a7;
+      --sub-accent: #1e3626;
+      --border-color: #385e44;
+      --shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      --card-back-bg: #355a40;
+      --card-back-text: #f4f9f4;
+      --tree-color: #2e5238;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 15px 60px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Background Decorations */
+    .bg-decoration {
+      position: fixed;
+      z-index: -1;
+      opacity: 0.25;
+      pointer-events: none;
+      font-size: 2rem;
+    }
+
+    /* Top Nav / Theme Toggle */
+    .top-nav {
+      width: 100%;
+      max-width: 650px;
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 10px;
+    }
+
+    .theme-toggle-btn {
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      color: var(--text-color);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .theme-toggle-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    /* Main Container */
+    .container {
+      width: 100%;
+      max-width: 650px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    /* Header Section */
+    .header-card {
+      background: var(--card-bg);
+      border: 3px solid var(--border-color);
+      border-radius: 30px;
+      padding: 35px 20px 25px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .animal-avatar {
+      font-size: 4.5rem;
+      display: inline-block;
+      margin-bottom: 10px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .nickname-title {
+      font-family: 'Gaegu', cursive;
+      font-size: 3.2rem;
+      font-weight: 700;
+      color: var(--accent-color);
+      margin-bottom: 5px;
+      line-height: 1;
+    }
+
+    .subtitle {
+      font-size: 1.05rem;
+      opacity: 0.85;
+      font-weight: 600;
+    }
+
+    .forest-decor {
+      margin-top: 15px;
+      font-size: 1.3rem;
+      letter-spacing: 4px;
+    }
+
+    /* Section Styles */
+    .section-title {
+      font-family: 'Gaegu', cursive;
+      font-size: 2.1rem;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent-color);
+    }
+
+    /* Favorites - Flip Cards */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+
+    @media (max-width: 580px) {
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .flip-card {
+      background-color: transparent;
+      height: 220px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .flip-card.flipped .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flip-card-front, .flip-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border-radius: 20px;
+      border: 2px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
+
+    .flip-card-front {
+      background-color: var(--card-bg);
+    }
+
+    .flip-card-front .icon {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+
+    .flip-card-front .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .flip-card-front .hint {
+      font-size: 0.8rem;
+      opacity: 0.6;
+      margin-top: 8px;
+    }
+
+    .flip-card-back {
+      background-color: var(--card-back-bg);
+      color: var(--card-back-text);
+      transform: rotateY(180deg);
+    }
+
+    .flip-card-back .reason {
+      font-size: 0.95rem;
+      line-height: 1.45;
+      font-weight: 600;
+      word-break: keep-all;
+    }
+
+    /* OX Quiz Section */
+    .quiz-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 25px;
+      padding: 25px 20px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .quiz-question {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .quiz-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .ox-btn {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid var(--border-color);
+      background: var(--sub-accent);
+      color: var(--accent-color);
+      font-size: 2.2rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.2s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .ox-btn:hover {
+      transform: scale(1.08);
+      background: var(--accent-color);
+      color: white;
+    }
+
+    .quiz-result {
+      margin-top: 15px;
+      min-height: 32px;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    /* Fortune Generator Section */
+    .fortune-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 25px;
+      padding: 25px 20px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    /* 흔들림 애니메이션 효과 */
+    .shake {
+      animation: shake-animation 0.4s ease-in-out;
+    }
+
+    @keyframes shake-animation {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      20% { transform: translate(-4px, 2px) rotate(-1.5deg); }
+      40% { transform: translate(4px, -2px) rotate(1.5deg); }
+      60% { transform: translate(-3px, -1px) rotate(-1deg); }
+      80% { transform: translate(3px, 1px) rotate(1deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
+
+    .fortune-btn {
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .fortune-btn:hover {
+      background: var(--accent-hover);
+      transform: scale(1.03);
+    }
+
+    .fortune-display {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 15px;
+      background: var(--sub-accent);
+      border: 1px dashed var(--border-color);
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 600;
+      line-height: 1.5;
+      word-break: keep-all;
+    }
+
+    /* Celebration Effect (Confetti container) */
+    #celebration-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      font-size: 1.5rem;
+      animation: fall 2.5s linear forwards;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-20px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Decorative Icons -->
+  <div class="bg-decoration" style="top: 10%; left: 5%;">🌲</div>
+  <div class="bg-decoration" style="top: 25%; right: 8%;">🍄</div>
+  <div class="bg-decoration" style="top: 55%; left: 3%;">🐿️</div>
+  <div class="bg-decoration" style="top: 75%; right: 5%;">🌿</div>
+
+  <!-- Confetti Layer -->
+  <div id="celebration-container"></div>
+
+  <!-- Top Navigation (Theme Toggle) -->
+  <div class="top-nav">
+    <button class="theme-toggle-btn" id="theme-toggle" aria-label="테마 전환">
+      <span id="theme-icon">☀️</span>
+      <span id="theme-text">낮의 숲</span>
+    </button>
+  </div>
+
+  <div class="container">
+    
+    <!-- Profile Header Section -->
+    <header class="header-card">
+      <div class="animal-avatar">🐻🍃</div>
+      <h1 class="nickname-title">아루 (Aru)</h1>
+      <p class="subtitle">평화로운 숲속 오두막에 오신 것을 환영해요!</p>
+      <div class="forest-decor">🌲 🐿️ 🌰 🌸 🍄</div>
+    </header>
+
+    <!-- Favorites Section (Flip Cards) -->
+    <section>
+      <h2 class="section-title">✨ 아루가 좋아하는 3가지</h2>
+      <div class="cards-grid">
+        
+        <!-- Card 1: Pokemon -->
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <div class="icon">⚡</div>
+              <div class="card-title">포켓몬</div>
+              <div class="hint">클릭해서 뒤집기 👆</div>
+            </div>
+            <div class="flip-card-back">
+              <div class="reason">
+                "나중에 숲속에 귀여운 피카츄랑 다람쥐 포켓몬 방목해서 같이 도토리 줍는 게 제 인생의 비밀 꿈이에요! ⚡🐿️"
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Dog -->
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <div class="icon">🐶</div>
+              <div class="card-title">강아지</div>
+              <div class="hint">클릭해서 뒤집기 👆</div>
+            </div>
+            <div class="flip-card-back">
+              <div class="reason">
+                "꼬리를 헬리콥터처럼 뱅뱅 돌리며 반겨주는 댕댕이들을 보면 숲속 모든 스트레스가 싹 날아가거든요! 🐾"
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Yupdduk -->
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <div class="icon">🌶️</div>
+              <div class="card-title">엽떡</div>
+              <div class="hint">클릭해서 뒤집기 👆</div>
+            </div>
+            <div class="flip-card-back">
+              <div class="reason">
+                "매운 맛으로 혈중 엽떡 농도를 채워줘야 숲속 생활에 엔돌핀이 팍팍 돋기 때문이죠! 치즈 추가 필수! 🧀"
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- OX Quiz Section -->
+    <section>
+      <h2 class="section-title">❓ 아루에 대한 OX 퀴즈</h2>
+      <div class="quiz-card">
+        <div class="quiz-question">"나는 키가 크다!" 📏</div>
+        <div class="quiz-buttons">
+          <button class="ox-btn" onclick="checkQuiz('O')">O</button>
+          <button class="ox-btn" onclick="checkQuiz('X')">X</button>
+        </div>
+        <div class="quiz-result" id="quiz-result"></div>
+      </div>
+    </section>
+
+    <!-- Fortune Generator Section -->
+    <section>
+      <h2 class="section-title">🥠 오늘의 숲속 운세</h2>
+      <div class="fortune-card">
+        <button class="fortune-btn" onclick="drawFortune()">🔮 운세 뽑아보기</button>
+        <div class="fortune-display" id="fortune-display">
+          버튼을 눌러 오늘의 숲속 메시지를 확인해 보세요!
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    /* Theme Toggle Logic */
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const themeText = document.getElementById('theme-text');
+
+    themeToggleBtn.addEventListener('click', () => {
+      const currentTheme = document.body.getAttribute('data-theme');
+      if (currentTheme === 'dark') {
+        document.body.removeAttribute('data-theme');
+        themeIcon.textContent = '☀️';
+        themeText.textContent = '낮의 숲';
+      } else {
+        document.body.setAttribute('data-theme', 'dark');
+        themeIcon.textContent = '🌙';
+        themeText.textContent = '밤의 숲';
+      }
+    });
+
+    /* OX Quiz Logic */
+    function checkQuiz(answer) {
+      const resultDiv = document.getElementById('quiz-result');
+      if (answer === 'O') {
+        resultDiv.style.color = '#4caf50';
+        resultDiv.textContent = '🎉 정답이에요! 나름(?) 장신을 자랑한답니다! 🌲✨';
+        triggerCelebration();
+      } else {
+        resultDiv.style.color = '#e53935';
+        resultDiv.textContent = '😅 아쉬워요! 틀렸습니다~ 생각보다 아루는 키가 크답니다! 🦒';
+      }
+    }
+
+    /* Celebration Confetti Animation */
+    function triggerCelebration() {
+      const container = document.getElementById('celebration-container');
+      container.innerHTML = '';
+      const symbols = ['🎉', '✨', '🍃', '🌸', '⭐', '🎈'];
+      
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        particle.style.left = Math.random() * 100 + 'vw';
+        particle.style.animationDelay = Math.random() * 0.5 + 's';
+        particle.style.animationDuration = (Math.random() * 1.5 + 1.5) + 's';
+        container.appendChild(particle);
+
+        setTimeout(() => {
+          particle.remove();
+        }, 3000);
+      }
+    }
+
+    /* Random Fortune Generator (10+ options) */
+    const fortunes = [
+      "🍀 오늘 길가다 마주치는 다람쥐가 행운을 가져다줄 거예요!",
+      "🍰 매콤한 떡볶이를 먹으면 기분이 200% 상쾌해지는 하루!",
+      "⭐ 생각지도 못한 곳에서 전설의 포켓몬급 횡재를 하게 됩니다!",
+      "🐾 귀여운 강아지 영상을 보면 모든 근심 걱정이 사르르 녹아내려요.",
+      "🍄 숲속 오두막에서 푹 쉴 수 있는 완벽한 힐링 시간이 찾아옵니다.",
+      "🌈 오늘 당신의 귀여움 지수가 폭발하여 주변 사람들이 미소 짓습니다!",
+      "🎁 간식을 먹다 최애 디저트를 서비스로 얻게 될 좋은 예감!",
+      "☕ 가벼운 산책을 하면 뇌가 맑아지고 좋은 아이디어가 솟아나요.",
+      "☀️ 낮잠을 15분 자면 활력이 풀충전되는 은혜로운 하루입니다.",
+      "✨ 지금 고민하는 일? 생각보다 훨씬 싱겁고 쉽게 풀릴 거예요!",
+      "🌿 오늘 만나는 사람에게 칭찬 한 마디를 건네보세요. 더 큰 복이 돌아옵니다!"
+    ];
+
+    function drawFortune() {
+      const fortuneDisplay = document.getElementById('fortune-display');
+      const fortuneCard = document.querySelector('.fortune-card');
+      
+      // Card shake effect
+      fortuneCard.classList.remove('shake');
+      void fortuneCard.offsetWidth; // Reflow trigger
+      fortuneCard.classList.add('shake');
+
+      // Animation effect
+      fortuneDisplay.style.opacity = 0;
+      setTimeout(() => {
+        const randomIndex = Math.floor(Math.random() * fortunes.length);
+        fortuneDisplay.textContent = fortunes[randomIndex];
+        fortuneDisplay.style.opacity = 1;
+      }, 200);
+    }
+  </script>
+</body>
+</html>
